@@ -4,22 +4,36 @@ import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+/**
+* Класс InteractRunner предназначен для предоставления пользователю
+* меню с выбором действий для последующего выполнения арифметических
+* действий при помощи калькулятора
+* 
+* @author Ternov
+* @since 2017.09.13
+* @version 3.0
+* <br>
+* <b>В методах:</b><br>
+*  (scan) объект сканнера;<br>
+*  (calc) объект калькулятора;<br>
+*  (menuBuilder) билдер меню пользователя;<br>
+*  (resultBuilder) билдер для формирования строк результатов;<br>
+*/
 public class InteractRunner {
 
-	// Objects
-	Scanner scan = new Scanner(System.in);
-	Calculator calc = new Calculator();
+	final Scanner scan = new Scanner(System.in);
+	final Calculator calc = new Calculator();
+	final StringBuilder menuBuilder = new StringBuilder();
+	final StringBuilder resultBuilder = new StringBuilder();
 	
-	// Parametrs
 	int action = 0;
 	double result = 0;
 	double arg1 = 0;
 	double arg2 = 0;
 	
-	// Settings
 	boolean useResult = false;
 	boolean exit = false;
-	
+
 	
 	
 	public static void main(String[] args) {		
@@ -28,160 +42,234 @@ public class InteractRunner {
 	}	
 
 	
-	private void start() {
-		while (exit == false) {
-			
-			// Выводим варианты выбор на экран
+	
+	/**
+	* Метод createMenu() предназначен для создания пользовательского меню в виде
+	* объекта StringBuilder. Это было сделано для того, чтобы иметь возможность
+	* менять строки меню в одном месте с удобным форматированием.
+	* 
+	* Заполнение строк меню по мере необходимости, не забывая после добавления
+	* пункта меню - создать его релизацию в соответствующем методе обработки
+	* выбор пользователя.
+	*/
+	public void createMenu() {
+		this.menuBuilder.append("Выберите операцию, которую вы хотите совершить:\n\n");
+		this.menuBuilder.append("   1. Сложение\n");
+		this.menuBuilder.append("   2. Вычитание\n");
+		this.menuBuilder.append("   3. Умножение\n");
+		this.menuBuilder.append("   4. Деление\n");
+		this.menuBuilder.append("   5. Возведение в степень\n");
+		this.menuBuilder.append("   6. Включить/Выключить использование результата в качестве первого аргумента\n");
+		this.menuBuilder.append("   7. Очистить все аргументы и параметры программы\n");
+		this.menuBuilder.append("   8. Показать текущие значения аргументов\n");
+		this.menuBuilder.append("   9. Ввести аргументы\n");
+		this.menuBuilder.append("   10. Выйти из калькулятора\n\n");
+	}
+	
+	
+	
+	
+	
+	/**
+	* Метод start() является композитным и состоит из несколиких этапов работы программы:
+	* <br>
+	* #1 Создание стартового меню<br>
+	* #2 Основной цикл работы программы (проверка продолжать или завершить программу) <br>
+	* #3 Выбор варианта действия в пользовательском меню, и запуск действия<br>
+	*/
+	public void start() {
+		
+		// #1
+		createMenu();			
+		
+		// #2
+		while (exit == false) {			
+
 			addSeparator();
-			System.out.println("Выберите операцию, которую вы хотите совершить:");
-			System.out.println(" ");
-			System.out.println("   1. Суммирование");
-			System.out.println("   2. Вычитание");
-			System.out.println("   3. Умножение");
-			System.out.println("   4. Деление");
-			System.out.println("   5. Возведение в степень");
-			System.out.println("   6. Выбрать первым аргументом результат предыдущего вычисления (если есть)");
-			System.out.println("   7. Очистить аргументы (сделать дефолтными)");
-			System.out.println("   8. Показать текущие значения аргументов");
-			System.out.println("   9. Ввести аргументы");
-			System.out.println("   10. Выйти из калькулятора");
-			System.out.println(" ");
+			System.out.print(menuBuilder.toString());
 			
-				try {
-					System.out.print("Введите число варианта: ");
-					if (!scan.hasNextInt()) {
-						scan.nextInt();
-						continue;
-					}
-					else {
-						action = scan.nextInt();
-					}
-				} catch (InputMismatchException e) {
+			// #3
+			try {
+				System.out.print("Введите число варианта: ");
+				if (!scan.hasNextInt()) {
+					scan.nextInt();
+					continue;
+				} else {
+					this.action = scan.nextInt();
+					this.goAction(this.action);
+					
+				}
+			} catch (InputMismatchException e) {
+				    e.printStackTrace();
 					System.out.println("Неправильный выбор пункта");
 					scan.next();
-				}
-
-
-			
-			switch (action) {
-			    case 0:  System.out.println("Вы не выбрали пункт меню");
-			             break;
-			    
-		        case 1:  System.out.println("(Вы выбрали суммирование) ");
-		        		 if (useResult == false) {
-		        		   if (arg1 == 0 || arg2 == 0) {
-		        			   enterArgs();
-		        		   }
-		        		 } else {
-		        			 if (arg2 == 0) {
-		        				 enterArg(); 
-		        			 }
-		        		 }
-
-		        		 System.out.println("Результат: " + calc.summation(arg1, arg2));
-		        		 result = calc.summation(arg1, arg2);
-		                 break;
-		                 
-		        case 2:  System.out.println("(Вы выбрали вычитание) ");
-				         System.out.println("Результат: " + calc.subtraction(arg1, arg2));
-				         result = calc.subtraction(arg1, arg2);
-		                 break;
-		                 
-		        case 3:  System.out.println("(Вы выбрали умножение) ");	
-				         System.out.println("Результат: " + calc.composition(arg1, arg2));
-				         result = calc.composition(arg1, arg2);
-		                 break;
-		                 
-		        case 4:  System.out.println("(Вы выбрали деление) ");	
-				         System.out.println("Результат: " + calc.division(arg1, arg2));
-				         result = calc.composition(arg1, arg2);
-		                 break;
-		                 
-		        case 5:  System.out.println("(Вы выбрали возведение в степень) ");	
-				         System.out.println("Результат: " + calc.exponentiation(arg1, arg2));
-				         result = calc.exponentiation(arg1, arg2);
-		                 break;
-		                 
-		        case 6:  System.out.println("Вы выбрали первым аргументом полученный ранее результат. ");
-		                 if (result != 0){
-		                      arg1 = result;
-		 	                  System.out.println("Первому аргументу присвоено значение: " + result);
-		                 } else {
-		                	 System.out.print("Предыдущего результата еще нет. Первый аргумент не перезаписан");
-		                 }
-	                     break;
-	                     
-		        case 7:  System.out.println("Вы выбрали 'Очистить аргументы - вернуть введенный в консоль аргументы'");	
-		        	     arg1 = 0;
-		        		 arg2 = 0;
-		        		 result = 0;
-		        		 useResult = false;
-	                     break;
-	                     
-		        case 8:  System.out.println("Текущие значения аргументов:");
-		                 System.out.println("1: " + arg1);
-		                 System.out.println("2: " + arg2);
-	                     break;
-	                     
-		        case 9:  enterArgs();
-                         break;
-                         
-		       case 10:  exit = true;
-                         break;                  
-
-		       
-		       default:  System.out.println("(Вы выбрали некорректный пункт меню)");
-		                 break;
-	        }
+			}       
 		}
-		
+		System.out.println("Программа завершена");
 	}
 
 
-	// Вводим один агрумент
-    public void enterArg() {
-    	System.out.print("");
-    	System.out.print("Введите второй аргумент: ");
-    	arg2 = getDoubleArgs(); //scan.nextDouble();
-    	System.out.print("");
+	
+	
+	/**
+	* Метод goAction(int action) выполняет арифметическое действие над аргументами,
+	* или другое действие, которое соответствует конкретному выбору из меню пользователя.
+	* 
+	* @param action - Выбор пользователя
+	*/
+	public void goAction(int action) {
+		
+		switch (action) {
+		
+			case 0:  System.out.println("Вы не выбрали пункт меню");
+					 break;
+					    
+			case 1:  System.out.println("(Вы выбрали суммирование) ");
+			         this.entersArguments();
+			         resultBuilder.append("Результат: ").append(calc.summation(arg1, arg2));
+					 System.out.println(resultBuilder.toString());
+				     resultBuilder.delete(0, resultBuilder.length()); 
+				     result = calc.summation(arg1, arg2);
+				     break;
+				     
+			case 2:  System.out.println("(Вы выбрали вычитание) ");
+			         this.entersArguments();
+			         resultBuilder.append("Результат: ").append(calc.subtraction(arg1, arg2));
+			         System.out.println(resultBuilder.toString());
+		             resultBuilder.delete(0, resultBuilder.length()); 
+		             result = calc.subtraction(arg1, arg2);
+		             break;
+				                
+				                 
+			case 3:  System.out.println("(Вы выбрали умножение) ");
+			         this.entersArguments();
+			         resultBuilder.append("Результат: ").append(calc.composition(arg1, arg2));
+			         System.out.println(resultBuilder.toString());
+		             resultBuilder.delete(0, resultBuilder.length()); 
+					 result = calc.composition(arg1, arg2);
+				     break;
+				                 
+				                 
+			case 4:  System.out.println("(Вы выбрали деление) ");
+	                 this.entersArguments();
+	                 resultBuilder.append("Результат: ").append(calc.division(arg1, arg2));
+	                 System.out.println(resultBuilder.toString());
+                     resultBuilder.delete(0, resultBuilder.length()); 
+					 result = calc.division(arg1, arg2);
+				     break;
+				                 
+				                 
+			case 5:  System.out.println("(Вы выбрали возведение в степень) ");
+	                 this.entersArguments();
+			         resultBuilder.append("Результат: ").append(calc.exponentiation(arg1, arg2));
+                     System.out.println(resultBuilder.toString());
+                     resultBuilder.delete(0, resultBuilder.length()); 
+					 result = calc.exponentiation(arg1, arg2);
+				     break;
+				                 
+				                 
+			case 6:  System.out.println("Вы выбрали установку полученного ранее результата в качестве первого аргумента ");
+				     if (this.useResult) {
+				    	 this.useResult = false;
+				    	 System.out.printf("Текущий флаг отключен: %s", useResult);
+				     } else {
+				    	 this.useResult = true;
+				    	 System.out.printf("Текущий флаг включен: %s", useResult);
+				     }
+			         break;
+			                     
+			                     
+			case 7:  System.out.println("Вы выбрали 'Очистить все аргументы и параметры программы'\n");	
+				     arg1 = 0;
+				     arg2 = 0;
+				     result = 0;
+				     useResult = false;
+			         break;
+			                     
+			                     
+			case 8:  System.out.printf("Текущие значения аргументов: 1: %s  2: %s  Result: %s\n", arg1, arg2, result);
+			         break;
+			                     
+			                     
+			case 9:  arg1 = getEnterArg("первый аргумент");
+		 			 arg2 = getEnterArg("второй аргумент");
+		             break;
+		                         
+		                         
+		   case 10:  exit = true;
+		             break;                  
+
+				       
+		   default:  System.out.println("(Вы выбрали некорректный пункт меню)");
+				     break;
+		}		
+	}
+	
+	
+	/**
+	    * Метод entersArguments() - позволяет пользователю сделать ввод аргументов,
+	    * с которыми будет производиться выбранное им действие.
+	    */	
+    private void entersArguments() {
+    	if (this.useResult == true && this.result != 0) {
+    		this.arg1 = result;
+    		this.arg2 = getEnterArg("второй аргумент");		
+    	} else {
+    		this.arg1 = getEnterArg("первый аргумент");
+    		this.arg2 = getEnterArg("второй аргумент");	
+    	}	
+	}
+
+
+    
+    
+    /**
+    * Метод checkArgs() - позволяет проверить аргументы на наличие до старта работы основной
+    * логики программы, и если они отсутствуют - то предложить пользователю ввод 
+    * аргументов.
+    */	
+	public boolean checkEmptyArgs(double arg1, double arg2) {
+  		 if (arg1 == 0 || arg2 == 0) return true;
+  		 else return false;
     };
-    
-    
-    
-    // Вводим два агрумент
-    public void enterArgs() {
-    	System.out.print("");
-    	System.out.print("Введите первый аргумент: ");
-    	arg1 = getDoubleArgs(); // scan.nextDouble();
-    	System.out.print("Введите второй аргумент: ");
-    	arg2 = getDoubleArgs(); // scan.nextDouble();
-    	System.out.print("");
-    };
-    
-    
-    
-    // Очистка экрана
-    public void addSeparator() {
-    	System.out.println("-");
-    };
-    
-    
-    public double getDoubleArgs() {
+	
+	
+	
+    /**
+    * Метод enterArg() - позволяет вернуть введенный пользователем корректный
+    * ввод аргумента в формате double. Данный метод нужен для реализации
+    * стартового ввода аргументов программы
+    * 
+    * @param argName - имя аргумента, для строки запроса ввода аргумента
+    * @return double аргумент введенный пользователем
+    */
+    public double getEnterArg(String argName) {
     	double arg = 0;
     	boolean rightChoice = false;
     	
+    	System.out.printf("Введите %s: ", argName);
+    	
     	while (rightChoice == false) {
-			if (!scan.hasNextDouble()) {
-				scan.next();
-				System.out.println("Введите аргумент в правильном формате: ");
+			if (!this.scan.hasNextDouble()) {
+				this.scan.next();
+				System.out.printf("Введите %s в правильном формате: ", argName);
 			}
 			else {
 				arg = scan.nextDouble();
-				// System.out.println("(Введенно правильно: " + arg + ") ");
 				rightChoice = true;
 			}
     	}
     	return arg;
-    }
+    };
+    
+  
+    
+    /**
+    * Метод addSeparator() - быстрая возможность вывода разделителя в нужном месте
+    */
+    public void addSeparator() {
+    	System.out.println("-");
+    };
+    
     
 }

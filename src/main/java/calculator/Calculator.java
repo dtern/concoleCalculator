@@ -1,38 +1,68 @@
 package calculator;
 
-public class Calculator {
 
-	// Суммирование
+/**
+* Класс Calculator предназначен для произведения арифметический операций
+* с двумя аргументами: сложение, вычитание, произведение, деление, и
+* возведение в степень. Для этого созданы 5 отдельных методов.
+* 
+* @author Ternov
+* 
+* 
+*/
+public class Calculator implements Calculate {
+
+
+   /** Суммирование 
+	* @param var1 первый аргумент
+    * @param var2 второй аргумент 	
+    * @return result operation
+    */
 	public double summation(double var1, double var2){
 		return var1 + var2;
 	};
 	
 	
-	// Вычитание
+   /** Вычитание
+    * @param var1 первый аргумент
+    * @param var2 второй аргумент 	
+    * @return result operation
+    */
 	public double subtraction(double var1, double var2){
 		return var1 - var2;
 	};
 	
 	
-	// Произведение
+   /** Вычитание
+    * @param var1 первый аргумент
+    * @param var2 второй аргумент 	
+    * @return result operation
+    */
 	public double composition(double var1, double var2){
 		return var1 * var2;
 	};
 	
 	
-	// Деление
+   /** Деление
+    * @param var1 первый аргумент
+    * @param var2 второй аргумент 	
+    * @return result operation
+    */
 	public double division(double var1, double var2){
 		if (var2 != 0) {
 			return var1/var2;
 		}
 		else {
-			System.out.println("Ошбика, на ноль делить нельзя. Но если осторожно, то можно");
-			throw new ArithmeticException("Not finite");
+			throw new ArithmeticException("Division by zero");
 		}
 	};
 	
 	
-	// Возведение в степень
+   /** Возведение в степень
+    * @param var1 первый аргумент
+    * @param var2 второй аргумент 	
+    * @return result operation
+    */
 	public double exponentiation(double var1, double var2){
 		return Math.pow(var1, var2);
 	};	

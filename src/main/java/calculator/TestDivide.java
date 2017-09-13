@@ -14,6 +14,11 @@ public class TestDivide {
 		System.out.println("Результат деления с остатком (int): " + x%y );
 		System.out.println("Результат обычного деления (double): " + z/w );
 		System.out.println("Результат деления с остатком (double): " + z%w );
+		
+		/*
+		 * Пупсик рулит
+		 * 
+		 */
 
 	}
 
